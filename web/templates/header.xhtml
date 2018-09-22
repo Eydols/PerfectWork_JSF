@@ -17,18 +17,6 @@
 
             <div class="welcom">  
                 <h:form>
-                    
-                    <p>
-                        <h:commandLink action="#{localeChanger.changeLocale('en')}">
-                            <h:graphicImage library="images" name="eng.png" height="20px" width="40px" title="#{msg.english}"/> 
-                        </h:commandLink>
-                        
-                        <h:commandLink action="#{localeChanger.changeLocale('ru')}">
-                            <h:graphicImage library="images" name="rus.png" height="20px" width="40px" title="#{msg.russian}"/> 
-                        </h:commandLink>
-                        
-                    </p>
-                    
                     <h5>#{msg.welcom}, #{user.username} </h5> <!-- значение имени берется из поля username бина User -->
                     <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/> <!-- при нажатии на кнопку Выход отрабатывает метод exit(), который возвращает значение "exit", -->                            
                 </h:form>                                                                   <!-- в свою очередь навигация настроена т.о., что при возвращении методом данного значение -->

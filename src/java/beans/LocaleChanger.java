@@ -23,4 +23,5 @@ private Locale currentLocale = FacesContext.getCurrentInstance().getViewRoot().g
     return currentLocale;
     }
     
+    
 }

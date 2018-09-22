@@ -15,7 +15,10 @@
                 <h:graphicImage library="images" name="logotip.jpg" class="logo"/>
             </div>   
 
-            <div class="welcom">  
+            <div class="welcom"> 
+
+                <ui:include src="/templates/locales.xhtml"/>
+
                 <h:form>
                     <h5>#{msg.welcom}, #{user.username} </h5> <!-- значение имени берется из поля username бина User -->
                     <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/> <!-- при нажатии на кнопку Выход отрабатывает метод exit(), который возвращает значение "exit", -->                            
@@ -24,13 +27,17 @@
 
             <div class="search_div">
                 <h:form styleClass="search_form">
-                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}"/> <!-- введенное пользователем в поисковую строку значение,-->
-                                                                                                                          <!-- записывается в переменную searchString контроллера SearchController-->
+                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}" valueChangeListener="#{searchController.searchStringChanged}"> <!-- введенное пользователем в поисковую строку значение,-->
+                    <!-- записывается в переменную searchString контроллера SearchController-->
+                    <f:ajax event="change"/>
+                    </h:inputText>
+                    
                     <h:commandButton value="#{msg.search}" styleClass="search_button">
                         <f:ajax onevent="showProgress" execute="@form" event="click" render=":manList @form :pages1 :pages2" listener="#{searchController.fillManBySearch()}" /> 
                     </h:commandButton>
-                    <h:selectOneMenu value="#{searchController.searchType}"> <!-- выбранное пользователем условие поиска сохраняется в переменную searchType-->
+                    <h:selectOneMenu value="#{searchController.searchType}" valueChangeListener="#{searchController.searchTypeChanged}" > <!-- выбранное пользователем условие поиска сохраняется в переменную searchType-->
                         <f:selectItems value="${searchTypeController.searchList}"/> <!-- заполняем выпадающий список с помощью коллекции searchList, которая заполняется один раз при создании объекта SearchController-->
+                        <f:ajax event="change"/>
                     </h:selectOneMenu>
                 </h:form>
             </div>

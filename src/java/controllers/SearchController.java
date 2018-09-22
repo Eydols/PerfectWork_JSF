@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 
 @ManagedBean(eager = true)
 @SessionScoped
@@ -26,7 +27,7 @@ public class SearchController implements Serializable {
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
-    
+
     private String searchString;
     private SearchType searchType;
     private ArrayList<Man> currentManList;
@@ -40,13 +41,13 @@ public class SearchController implements Serializable {
     private String currentSql;
 
     public SearchController() {
-        
+
     }
 
     private void fillManBySQL(String sql) {
 
-      imitateLoading();
-        
+        imitateLoading();
+
         StringBuilder sqlBuilder = new StringBuilder(sql);
         currentSql = sql;
 
@@ -85,16 +86,22 @@ public class SearchController implements Serializable {
         } catch (SQLException ex) {
             Logger.getLogger(ManList.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-                try {
-               if (stmt !=null) stmt.close();
-               if (rs!=null)rs.close();
-               if (conn!=null)conn.close();
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
-               Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE,null,ex);
+                Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    }
-    
+
     private void fillManAll() {
         fillManBySQL("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
@@ -105,8 +112,7 @@ public class SearchController implements Serializable {
     }
 
     public void fillManBySearch() {
-        
-        
+
         StringBuilder sql = new StringBuilder("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
                 + "inner join spr_firm sf on m.firm_id=sf.id \n"
@@ -122,7 +128,7 @@ public class SearchController implements Serializable {
             sql.append(" where (lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')or ( \n"
                     + "lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')order by m.surname");
 
-        } else if (searchType == SearchType.ALL_FIRM){
+        } else if (searchType == SearchType.ALL_FIRM) {
             sql.append(" where lower(m.surname) like '%" + searchString.toLowerCase() + "%' order by m.surname");
         }
 
@@ -155,13 +161,21 @@ public class SearchController implements Serializable {
             pageNumbersList.add(i);
         }
     }
-    
+
     private void imitateLoading() {
-    try {
-    Thread.sleep(1000); // имитация загрузки процесса
-    } catch (InterruptedException ex) {
-        Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            Thread.sleep(1000); // имитация загрузки процесса
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    public void searchTypeChanged(ValueChangeEvent e) { // благодаря данному методу сохраняется выбранный тип поиска при переключении языка
+        searchType = (SearchType) e.getNewValue();
+    }
+    
+    public void searchStringChanged(ValueChangeEvent e) {
+    searchString = (String) e.getNewValue();
     }
 
     // геттеры, сеттеры

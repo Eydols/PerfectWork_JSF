@@ -1,0 +1,226 @@
+/*Страница header.jspf*/
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 99%;
+    height: 100%;
+
+}
+.container {
+    width: 100%;
+    height: 100%;
+}
+.header {
+    width: 100%;
+    height: 30%;
+}
+.logo {
+    width: 100%;
+    height: 40%;
+}
+img.logo {
+    width: 100%;
+    height: 100%;  
+}
+
+.welcom {
+    width: 30%;
+    height: 30%;
+    float: right;
+    text-align: right;
+    margin-left: 70%;
+}
+
+.welcom h5, h6 {
+    margin:0;
+    margin-top: 10px;
+    font-size: 14px;
+
+}
+
+
+.search_div {
+    width: 67%;
+    height: 30%;
+    padding-left: 29%; 
+}
+
+.pager.selected_page {
+    color: red;
+}
+
+
+
+/*Страница man.jsp*/
+.container_man {
+    background-image: url(../images/man_back.jpg);
+    background-position: left;
+    background-repeat: no-repeat;
+}
+.container_passport {
+    background-image: url(../images/passport_back.jpg);
+    background-position: left;
+    background-repeat: no-repeat;
+}
+
+.container_diplom{
+
+}
+
+.left_menu {
+    float: left; 
+    width: 17%; 
+    height: 300px; 
+    font-size: 24px;
+    padding-top: 30px;
+}
+
+.left_menu_row {
+   padding-right: 30px;
+    
+}
+
+.string_list_man {
+    font-size: 20px;
+    width: 30%;
+    height: 30px;
+    margin-left: 300px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.string_list {
+    font-size: 20px;
+    width: 30%;
+    height: 30px;
+    margin-left: 300px;
+    margin-bottom: 70px;
+    margin-top: 0px;
+}
+
+.table_man, .table_passport, .table_diplom_vuz, .table_trud_book, .table_qualif_attestat, .table_ud_poot, .table_svid_povqual {
+    height: 500px;
+    width: 67%;
+    overflow: auto;
+    border: 1px solid gray; 
+}
+
+.image_man {
+    height: 170px; 
+    width: 17%;  
+    float: left;
+
+}
+
+.image_passport {
+    height: 500px; 
+    width: 355px;  
+    float: left;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    border: 1px solid gray;
+}
+
+.image_diplom_vuz  {
+    height: 500px; 
+    width: 100%;  
+    float: left;
+    margin-bottom: 2%;
+}
+
+.image_diplom_ssuz {
+    height: 500px; 
+    width: 100%;  
+    float: left;
+    margin-bottom: 2%;
+}
+
+.image_svid_povqual {
+    height: 500px; 
+    width: 100%;  
+    float: left;
+    margin-bottom: 2%;
+}
+
+.image_trud_book {
+    height: 343px; 
+    width: 250px;  
+    float: left;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+    margin-right: 15%;
+    border: 1px solid gray;
+}
+
+.image_qualif_attestat {
+    height: 360px; 
+    width: 500px;  
+    float: left;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+    margin-right: 15%;
+    border: 1px solid gray;
+}
+
+.info_man {
+    width: 56%;
+    height: 170px; 
+    float: left;
+}
+
+.image_doc_man {
+    height: 170px; 
+    width: 27%; 
+    float: left; 
+}
+
+.string_birth_date, .string_dok_okonch {
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+}
+
+.list_birth_date, .list_dok_okonch {
+    height: 100px;
+    width: 67%;
+    overflow: auto;
+    border: 1px solid gray;
+    margin-top: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

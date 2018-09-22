@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title> Информационный центр </title>
+         <h:outputStylesheet library="css" name="style_main.css"/>
+    </h:head>
+    
+    <h:body>
+        <ui:composition template="/templates/perfect_template.xhtml">
+            
+            <ui:define name="content" >
+                
+                <p><strong>#{msg.man_count} #{searchController.totalManCount} </strong></p>
+                
+                <h:form>
+                <h:dataTable  value="#{searchController.currentManList}" var="m" cellspacing="10px" columnClasses="col1, col2, col3">
+                    
+                    <h:column>
+                        <h:graphicImage value="../resources/#{m.photo}" height="120" width="90" />
+                    </h:column>
+                    
+                    <h:column>
+                        <p><strong>ФАМИЛИЯ:</strong> #{m.surname}</p>
+                        <p><strong>ИМЯ:</strong> #{m.name}</p>
+                        <p><strong>ОТЧЕСТВО:</strong> #{m.otchestvo}</p>
+                        <p><strong>ВОЗРАСТ:</strong> #{m.age}</p>
+                        <p><strong>ДОЛЖНОСТЬ:</strong> #{m.doljnost}</p>
+                        <p><strong>ФИРМА:</strong> #{m.firm}</p>
+                        <p><strong>ДОЛЖНОСТЬ2:</strong> #{m.doljnost2}</p> <!-- здесь нужно будет вставить условие: если человек работает на 2х фирмах, -->
+                        <p><strong>ФИРМА2:</strong> #{m.firm2}</p>         <!-- то для него выводить обе фирмы и обе должности -->
+                    </h:column>
+                    
+                    
+                    <!-- обложки документов (начало) -->
+                    <h:column>
+                        <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=passport" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_passport.jpg" height="60" width="45" alt="Паспорт"/>
+                        </h:outputLink>
+                        
+                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_vuz" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz.jpg" height="60" width="45" alt="Диплом ВУЗ"/>
+                        </h:outputLink>
+                        
+                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_ssuz" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz_per.jpg" height="60" width="45" alt="Диплом ССУЗ"/>
+                        </h:outputLink> </p>
+                        
+                        <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=trud_book" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_trud_book.jpg" height="60" width="45" alt="Трудовая книжка"/>
+                        </h:outputLink>
+                        
+                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=svid_povqual" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_svid_pov_qual.jpg" height="60" width="45" alt="ПОВЫШ КВ"/>
+                        </h:outputLink>
+                        
+                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=ud_poot" target="blank"> <!-- blank - открывать в новой вкладке -->
+                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_ud_po_ot.jpg" height="60" width="45" alt="ОТ"/>
+                        </h:outputLink></p>
+                    </h:column>
+                    <!-- обложки документов (окончание) -->
+                    
+                </h:dataTable>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+    </h:body>
+</html>
+

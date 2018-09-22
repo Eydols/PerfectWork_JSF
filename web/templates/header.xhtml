@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="style_main.css"/>
+    </h:head>
+    <h:body>
+        <ui:composition>
+
+            <div class="logo">
+                <h:graphicImage library="images" name="logotip.jpg" class="logo"/>
+            </div>   
+
+            <div class="welcom">  
+                <h:form>
+                    
+                    <p>
+                        <h:commandLink action="#{localeChanger.changeLocale('en')}">
+                            <h:graphicImage library="images" name="eng.png" height="20px" width="40px" title="#{msg.english}"/> 
+                        </h:commandLink>
+                        
+                        <h:commandLink action="#{localeChanger.changeLocale('ru')}">
+                            <h:graphicImage library="images" name="rus.png" height="20px" width="40px" title="#{msg.russian}"/> 
+                        </h:commandLink>
+                        
+                    </p>
+                    
+                    <h5>#{msg.welcom}, #{user.username} </h5> <!-- значение имени берется из поля username бина User -->
+                    <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/> <!-- при нажатии на кнопку Выход отрабатывает метод exit(), который возвращает значение "exit", -->                            
+                </h:form>                                                                   <!-- в свою очередь навигация настроена т.о., что при возвращении методом данного значение -->
+            </div>                                                                          <!-- происходит перенаправление на страницу index.xhtml (см. файл faces-config.xml)-->
+
+            <div class="search_div">
+                <h:form styleClass="search_form">
+                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}"/> <!-- введенное пользователем в поисковую строку значение,-->
+                                                                                                                          <!-- записывается в переменную searchString контроллера SearchController-->
+                    <h:commandButton value="#{msg.search}" styleClass="search_button">
+                        <f:ajax onevent="showProgress" execute="@form" event="click" render=":manList @form :pages1 :pages2" listener="#{searchController.fillManBySearch()}" /> 
+                    </h:commandButton>
+                    <h:selectOneMenu value="#{searchController.searchType}"> <!-- выбранное пользователем условие поиска сохраняется в переменную searchType-->
+                        <f:selectItems value="${searchTypeController.searchList}"/> <!-- заполняем выпадающий список с помощью коллекции searchList, которая заполняется один раз при создании объекта SearchController-->
+                    </h:selectOneMenu>
+                </h:form>
+            </div>
+
+        </ui:composition>
+    </h:body>
+</html>
+

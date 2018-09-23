@@ -1,11 +1,11 @@
 package controllers;
 
 import beans.Man;
-import beans.ManList;
 import db.Database;
 import enums.SearchType;
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,7 +22,7 @@ import javax.faces.event.ValueChangeEvent;
 
 @ManagedBean(eager = true)
 @SessionScoped
-public class SearchController implements Serializable {
+public class ManListController implements Serializable {
 
     Connection conn = null;
     Statement stmt = null;
@@ -40,7 +40,17 @@ public class SearchController implements Serializable {
 
     private String currentSql;
 
-    public SearchController() {
+    private boolean editMode = false; // предназначена для переключения ржимов отображения(false)/редактирования(true) данных сотрудников
+
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+
+    public ManListController() {
 
     }
 
@@ -74,7 +84,7 @@ public class SearchController implements Serializable {
                 man.setName(rs.getString("name"));
                 man.setSurname(rs.getString("surname"));
                 man.setOtchestvo(rs.getString("otchestvo"));
-                man.setBirthDate(rs.getString("birth_date"));
+                man.setBirth_date(rs.getString("birth_date"));
                 man.setFirm(rs.getString("firm"));
                 man.setDoljnost(rs.getString("doljnost"));
                 man.setFirm2(rs.getString("firm2"));
@@ -84,7 +94,7 @@ public class SearchController implements Serializable {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ManList.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (stmt != null) {
@@ -97,7 +107,7 @@ public class SearchController implements Serializable {
                     conn.close();
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -166,19 +176,46 @@ public class SearchController implements Serializable {
         try {
             Thread.sleep(1000); // имитация загрузки процесса
         } catch (InterruptedException ex) {
-            Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public String updateMan() { // обновляет измененные данные сотудников после редактирования
+        imitateLoading();
+
+        try (Connection conn = Database.getConnection();
+                PreparedStatement prepStmt = conn.prepareStatement("update man set name=?, surname=?, otchestvo=?, birth_date=? where id=?");
+                ResultSet rs = null;) {
+            for (Man man : currentManList) {
+                prepStmt.setString(1, man.getName());
+                prepStmt.setString(2, man.getSurname());
+                prepStmt.setString(3, man.getOtchestvo());
+                prepStmt.setString(4, man.getBirth_date());
+                prepStmt.setInt(5, man.getId());
+                prepStmt.addBatch();
+            }
+            prepStmt.executeBatch();
+        } catch (SQLException ex) {
+            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        switchEditMode();
+        return "man";
+    }
+
+    public void switchEditMode() {
+        editMode = !editMode;
     }
 
     public void searchTypeChanged(ValueChangeEvent e) { // благодаря данному методу сохраняется выбранный тип поиска при переключении языка
         searchType = (SearchType) e.getNewValue();
     }
-    
-    public void searchStringChanged(ValueChangeEvent e) {
-    searchString = (String) e.getNewValue();
+
+    public void searchStringChanged(ValueChangeEvent e) { //благодаря данному методу сохраняются символы, введенные в поисковую строку, при переключении языка
+        searchString = (String) e.getNewValue();
     }
 
-    // геттеры, сеттеры
+    //<editor-fold defaultstate="collapsed" desc="геттеры/сеттеры">
     public SearchType getSearchType() {
         return searchType;
     }
@@ -234,5 +271,6 @@ public class SearchController implements Serializable {
     public void setPageNumbersList(ArrayList<Integer> pageNumbersList) {
         this.pageNumbersList = pageNumbersList;
     }
+//</editor-fold>
 
 }

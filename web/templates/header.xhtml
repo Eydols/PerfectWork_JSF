@@ -27,15 +27,15 @@
 
             <div class="search_div">
                 <h:form styleClass="search_form">
-                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}" valueChangeListener="#{searchController.searchStringChanged}"> <!-- введенное пользователем в поисковую строку значение,-->
+                    <h:inputText id="search_string" styleClass="search_string" value="#{manListController.searchString}" valueChangeListener="#{manListController.searchStringChanged}"> <!-- введенное пользователем в поисковую строку значение,-->
                     <!-- записывается в переменную searchString контроллера SearchController-->
                     <f:ajax event="change"/>
                     </h:inputText>
                     
                     <h:commandButton value="#{msg.search}" styleClass="search_button">
-                        <f:ajax onevent="showProgress" execute="@form" event="click" render=":manList @form :pages1 :pages2" listener="#{searchController.fillManBySearch()}" /> 
+                        <f:ajax onevent="showProgress" execute="@form" event="click" render=":manForm:manList @form :pages1 :pages2" listener="#{manListController.fillManBySearch()}" /> 
                     </h:commandButton>
-                    <h:selectOneMenu value="#{searchController.searchType}" valueChangeListener="#{searchController.searchTypeChanged}" > <!-- выбранное пользователем условие поиска сохраняется в переменную searchType-->
+                    <h:selectOneMenu value="#{manListController.searchType}" valueChangeListener="#{manListController.searchTypeChanged}" > <!-- выбранное пользователем условие поиска сохраняется в переменную searchType-->
                         <f:selectItems value="${searchTypeController.searchList}"/> <!-- заполняем выпадающий список с помощью коллекции searchList, которая заполняется один раз при создании объекта SearchController-->
                         <f:ajax event="change"/>
                     </h:selectOneMenu>

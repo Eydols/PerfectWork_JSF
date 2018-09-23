@@ -56,11 +56,11 @@ public class Man {
         this.otchestvo = otchestvo;
     }
     
-    public String getBirthDate() {
+    public String getBirth_date() {
         return birth_date;
     }
     
-    public void setBirthDate(String birth_date) {
+    public void setBirth_date(String birth_date) {
         this.birth_date = birth_date;
     }
     

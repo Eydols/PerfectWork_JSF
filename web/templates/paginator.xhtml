@@ -11,12 +11,12 @@
     <h:body>
         <ui:composition>
 
-                    <h:form rendered="#{searchController.totalManCount>searchController.manOnPage}">
+                    <h:form rendered="#{manListController.totalManCount>manListController.manOnPage}">
                         #{msg.pager}
-                        <ui:repeat value="#{searchController.pageNumbersList}" var="pageNumber">
-                            <h:commandLink value="#{pageNumber}" styleClass="#{pageNamber == searchController.selectedPageNumber ? 'selected_page' : ''}">
+                        <ui:repeat value="#{manListController.pageNumbersList}" var="pageNumber">
+                            <h:commandLink value="#{pageNumber}" styleClass="#{pageNamber == manListController.selectedPageNumber ? 'selected_page' : ''}">
                                 <f:param name="page_number" value="#{pageNumber}" />
-                                <f:ajax onevent="showProgress" event="click" render=":manList :pages1 pages2" listener="#{searchController.selectPage()}" />
+                                <f:ajax onevent="showProgress" event="click" render=":manList :pages1 pages2" listener="#{manListController.selectPage()}" />
                             </h:commandLink>
                         </ui:repeat>
                     </h:form>

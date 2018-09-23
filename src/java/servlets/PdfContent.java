@@ -6,7 +6,7 @@
 package servlets;
 
 import beans.Man;
-import beans.ManList;
+import controllers.ManListController;
 import db.Database;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,7 +65,7 @@ public class PdfContent extends HttpServlet {
             out.write(bytesArray);
 
         } catch (SQLException ex) {
-            Logger.getLogger(ManList.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
 
         }
         finally {

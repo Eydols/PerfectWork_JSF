@@ -6,64 +6,125 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title> Информационный центр </title>
-         <h:outputStylesheet library="css" name="style_main.css"/>
+        <h:outputStylesheet library="css" name="style_main.css"/>
     </h:head>
-    
+
     <h:body>
         <ui:composition template="/templates/perfect_template.xhtml">
-            
+
             <ui:define name="content" >
-                
-                <p><strong>#{msg.man_count} #{searchController.totalManCount} </strong></p>
-                
-                <h:form>
-                <h:dataTable  value="#{searchController.currentManList}" var="m" cellspacing="10px" columnClasses="col1, col2, col3">
-                    
-                    <h:column>
-                        <h:graphicImage value="../resources/#{m.photo}" height="120" width="90" />
-                    </h:column>
-                    
-                    <h:column>
-                        <p><strong>ФАМИЛИЯ:</strong> #{m.surname}</p>
-                        <p><strong>ИМЯ:</strong> #{m.name}</p>
-                        <p><strong>ОТЧЕСТВО:</strong> #{m.otchestvo}</p>
-                        <p><strong>ВОЗРАСТ:</strong> #{m.age}</p>
-                        <p><strong>ДОЛЖНОСТЬ:</strong> #{m.doljnost}</p>
-                        <p><strong>ФИРМА:</strong> #{m.firm}</p>
-                        <p><strong>ДОЛЖНОСТЬ2:</strong> #{m.doljnost2}</p> <!-- здесь нужно будет вставить условие: если человек работает на 2х фирмах, -->
-                        <p><strong>ФИРМА2:</strong> #{m.firm2}</p>         <!-- то для него выводить обе фирмы и обе должности -->
-                    </h:column>
-                    
-                    
-                    <!-- обложки документов (начало) -->
-                    <h:column>
-                        <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=passport" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_passport.jpg" height="60" width="45" alt="Паспорт"/>
-                        </h:outputLink>
-                        
-                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_vuz" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz.jpg" height="60" width="45" alt="Диплом ВУЗ"/>
-                        </h:outputLink>
-                        
-                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_ssuz" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz_per.jpg" height="60" width="45" alt="Диплом ССУЗ"/>
-                        </h:outputLink> </p>
-                        
-                        <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=trud_book" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_trud_book.jpg" height="60" width="45" alt="Трудовая книжка"/>
-                        </h:outputLink>
-                        
-                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=svid_povqual" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_svid_pov_qual.jpg" height="60" width="45" alt="ПОВЫШ КВ"/>
-                        </h:outputLink>
-                        
-                        <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=ud_poot" target="blank"> <!-- blank - открывать в новой вкладке -->
-                            <h:graphicImage value="../resources/images/oblojki_dok/oblojka_ud_po_ot.jpg" height="60" width="45" alt="ОТ"/>
-                        </h:outputLink></p>
-                    </h:column>
-                    <!-- обложки документов (окончание) -->
-                    
-                </h:dataTable>
+
+                <p><strong>#{msg.man_count} #{manListController.totalManCount} </strong></p>
+
+                <h:form id="manForm">
+
+                    <h:panelGroup id="admin_tools"> <!-- панель администратора (редактирование информации о сотрудниках и добавление новых сотрудников) -->
+
+                        <h:commandLink rendered="#{!manListController.editMode}">  <!-- ссылка Добавить сотрудника -->
+                            <h:graphicImage library="images" name="add.png" height="20" width="20"/>
+                            <h:outputText value="#{msg.add_man}"></h:outputText>
+                            <f:ajax onevent="showProgress" execute="@form" render="@form"/>
+                        </h:commandLink> 
+
+                        <h:commandLink action="#{manListController.switchEditMode()}" rendered="#{!manListController.editMode}"> <!-- ссылка Редактировать -->
+                            <h:graphicImage library="images" name="edit.jpg" height="20" width="20"/>
+                            <h:outputText value="#{msg.edit}"></h:outputText>
+                            <f:ajax onevent="showProgress" execute="@form" render="@form"/>
+                        </h:commandLink>
+
+                        <h:commandButton action="#{manListController.updateMan()}" rendered="#{manListController.editMode}" 
+                                         value="#{msg.save}"></h:commandButton> <!-- кнопка Сохранить -->
+
+                        <h:commandButton immediate="true" action="#{manListController.switchEditMode()}" rendered="#{manListController.editMode}" 
+                                         value="#{msg.cancel}"></h:commandButton> <!-- кнопка Отмена -->
+                    </h:panelGroup>
+                    <h:dataTable id="manList" value="#{manListController.currentManList}" var="m" cellspacing="10px" columnClasses="col1, col2, col3">
+
+                        <h:column>
+                            <h:graphicImage value="../resources/#{m.photo}" height="120" width="90" />
+                        </h:column>
+
+                        <h:column> <!-- столбец с основными данными сотрудников -->
+                            <p>
+                                <strong>ФАМИЛИЯ:</strong> 
+                                <h:outputText value="#{m.surname}" rendered="#{!manListController.editMode}"/>
+                                <h:inputText value="#{m.surname}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
+                            </p>
+
+                            <p>
+                                <strong>ИМЯ:</strong> 
+                                <h:outputText value="#{m.name}" rendered="#{!manListController.editMode}"/>
+                                <h:inputText value="#{m.name}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
+                            </p>
+
+                            <p>
+                                <strong>ОТЧЕСТВО:</strong> 
+                                <h:outputText value="#{m.otchestvo}" rendered="#{!manListController.editMode}"/>
+                                <h:inputText value="#{m.otchestvo}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
+                            </p>
+
+                            <h:panelGroup rendered="#{manListController.editMode}"> <!-- данное поле будет появляться только при редактировании -->
+                                <p>
+                                    <strong>ДАТА РОЖДЕНИЯ:</strong> 
+                                    <h:inputText value="#{m.birth_date}" styleClass="name_edit"/>
+                                </p> 
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{!manListController.editMode}"> <!-- данное поле будет появляться только при просмотре -->
+                                <p>                                                  <!-- и зависеть от введенной даты рождения -->
+                                    <strong>ВОЗРАСТ:</strong> 
+                                    <h:outputText value="#{m.age}"/>
+                                </p>
+                            </h:panelGroup>
+
+                            <p>
+                                <strong>ДОЛЖНОСТЬ:</strong> #{m.doljnost} 
+                            </p>
+
+                            <p>
+                                <strong>ФИРМА:</strong> #{m.firm}
+                            </p>
+
+                            <p>
+                                <strong>ДОЛЖНОСТЬ2:</strong> #{m.doljnost2} <!-- здесь нужно будет вставить условие: если человек работает на 2х фирмах, -->
+                            </p>                                            <!-- то для него выводить обе фирмы и обе должности -->
+
+                            <p>
+                                <strong>ФИРМА2:</strong> #{m.firm2}
+                            </p> 
+
+                        </h:column>
+
+
+                        <!-- обложки документов (начало) -->
+                        <h:column>
+                            <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=passport" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_passport.jpg" height="60" width="45" alt="Паспорт"/>
+                                </h:outputLink>
+
+                                <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_vuz" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz.jpg" height="60" width="45" alt="Диплом ВУЗ"/>
+                                </h:outputLink>
+
+                                <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=diplom_ssuz" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_vuz_per.jpg" height="60" width="45" alt="Диплом ССУЗ"/>
+                                </h:outputLink> </p>
+
+                            <p><h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=trud_book" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_trud_book.jpg" height="60" width="45" alt="Трудовая книжка"/>
+                                </h:outputLink>
+
+                                <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=svid_povqual" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_svid_pov_qual.jpg" height="60" width="45" alt="ПОВЫШ КВ"/>
+                                </h:outputLink>
+
+                                <h:outputLink value="#{request.contextPath}/PdfContent?index=#{m.id}&amp;table=ud_poot" target="blank"> <!-- blank - открывать в новой вкладке -->
+                                    <h:graphicImage value="../resources/images/oblojki_dok/oblojka_ud_po_ot.jpg" height="60" width="45" alt="ОТ"/>
+                                </h:outputLink></p>
+                        </h:column>
+                        <!-- обложки документов (окончание) -->
+
+                    </h:dataTable>
                 </h:form>
             </ui:define>
 

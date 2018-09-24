@@ -19,11 +19,13 @@ public class Man {
     private String doljnost2;
     private String photo;
     
+    private boolean edit; // это поле отвечает за флажок напротив сотрудника на странице man.xhtml
     
     public Man(String surname) {
         this.surname = surname;
     }
     
+//<editor-fold defaultstate="collapsed" desc="геттеры/сеттеры">
     public int getId() {
         return id;
     }
@@ -64,13 +66,13 @@ public class Man {
         this.birth_date = birth_date;
     }
     
-   public String getFirm() {
+    public String getFirm() {
         return firm;
     }
     
     public void setFirm(String firm) {
         this.firm = firm;
-    } 
+    }
     
     public String getDoljnost() {
         return doljnost;
@@ -78,7 +80,7 @@ public class Man {
     
     public void setDoljnost(String doljnost) {
         this.doljnost = doljnost;
-    } 
+    }
     
     public String getFirm2() {
         return firm2;
@@ -86,7 +88,7 @@ public class Man {
     
     public void setFirm2(String firm2) {
         this.firm2 = firm2;
-    } 
+    }
     
     public String getDoljnost2() {
         return doljnost2;
@@ -94,7 +96,7 @@ public class Man {
     
     public void setDoljnost2(String doljnost2) {
         this.doljnost2 = doljnost2;
-    } 
+    }
     
     public String getPhoto() {
         return photo;
@@ -103,6 +105,15 @@ public class Man {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+    
+    public boolean isEdit() {
+        return edit;
+    }
+    
+    public void setEdit(boolean edit) {
+        this.edit = edit;
+    }
+//</editor-fold>
 
 public int getAge() { //Высчисляет возраст сотрудника через его ДР и возвращает на страницу man.jsp
     Date currentDate = new Date(); // Возвращает текущую дату

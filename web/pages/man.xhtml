@@ -33,37 +33,42 @@
                         </h:commandLink>
 
                         <h:commandButton action="#{manListController.updateMan()}" rendered="#{manListController.editMode}" 
-                                         value="#{msg.save}"></h:commandButton> <!-- кнопка Сохранить -->
+                                         value="#{msg.save}"> <!-- кнопка Сохранить -->
+                            <f:ajax onevent="showProgress" execute="@form" render="@form"/>
+                        </h:commandButton> 
 
-                        <h:commandButton immediate="true" action="#{manListController.switchEditMode()}" rendered="#{manListController.editMode}" 
-                                         value="#{msg.cancel}"></h:commandButton> <!-- кнопка Отмена -->
+                        <h:commandButton immediate="true" action="#{manListController.cancelEdit}" rendered="#{manListController.editMode}" 
+                                         value="#{msg.cancel}"> <!-- кнопка Отмена -->
+                            <f:ajax onevent="showProgress" execute="@form" render="@form"/>
+                        </h:commandButton> 
                     </h:panelGroup>
+                    
                     <h:dataTable id="manList" value="#{manListController.currentManList}" var="m" cellspacing="10px" columnClasses="col1, col2, col3">
 
-                        <h:column>
+                        <h:column> <!-- колонка с фотографией сотрудника -->
                             <h:graphicImage value="../resources/#{m.photo}" height="120" width="90" />
                         </h:column>
 
-                        <h:column> <!-- столбец с основными данными сотрудников -->
+                        <h:column> <!-- колонка с основными данными сотрудника -->
                             <p>
                                 <strong>ФАМИЛИЯ:</strong> 
                                 <h:outputText value="#{m.surname}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.surname}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
+                                <h:inputText value="#{m.surname}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
                             </p>
 
                             <p>
                                 <strong>ИМЯ:</strong> 
                                 <h:outputText value="#{m.name}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.name}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
+                                <h:inputText value="#{m.name}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
                             </p>
 
                             <p>
                                 <strong>ОТЧЕСТВО:</strong> 
                                 <h:outputText value="#{m.otchestvo}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.otchestvo}" rendered="#{manListController.editMode}" styleClass="name_edit"/>
-                            </p>
+                                <h:inputText value="#{m.otchestvo}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
+                            </p> <!-- чтобы отображалось поле в режиме редактирования, д.б. поставлен флажок напротив нужного сотрудника (m.edit) -->
 
-                            <h:panelGroup rendered="#{manListController.editMode}"> <!-- данное поле будет появляться только при редактировании -->
+                            <h:panelGroup rendered="#{manListController.editMode and m.edit}"> <!-- данное поле будет появляться только при редактировании -->
                                 <p>
                                     <strong>ДАТА РОЖДЕНИЯ:</strong> 
                                     <h:inputText value="#{m.birth_date}" styleClass="name_edit"/>
@@ -123,6 +128,12 @@
                                 </h:outputLink></p>
                         </h:column>
                         <!-- обложки документов (окончание) -->
+
+                        <h:column>
+                            <h:selectBooleanCheckbox value="#{m.edit}" rendered="#{!manListController.editMode}">
+                                <f:ajax event="change"/>
+                            </h:selectBooleanCheckbox>
+                        </h:column>
 
                     </h:dataTable>
                 </h:form>

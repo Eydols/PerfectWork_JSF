@@ -187,6 +187,7 @@ public class ManListController implements Serializable {
                 PreparedStatement prepStmt = conn.prepareStatement("update man set name=?, surname=?, otchestvo=?, birth_date=? where id=?");
                 ResultSet rs = null;) {
             for (Man man : currentManList) {
+                if (!man.isEdit()) continue; // для сотрудников, напротив которых флажок не был нажат, обновление данных не происходит
                 prepStmt.setString(1, man.getName());
                 prepStmt.setString(2, man.getSurname());
                 prepStmt.setString(3, man.getOtchestvo());
@@ -205,6 +206,13 @@ public class ManListController implements Serializable {
 
     public void switchEditMode() {
         editMode = !editMode;
+    }
+    
+    public void cancelEdit() { // выполнятся при нажатии кнопки Отмена в режиме редактирования на странице man.xhtml
+    editMode = false;
+    for (Man man : currentManList) {
+    man.setEdit(false);
+    }
     }
 
     public void searchTypeChanged(ValueChangeEvent e) { // благодаря данному методу сохраняется выбранный тип поиска при переключении языка

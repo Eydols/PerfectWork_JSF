@@ -35,6 +35,7 @@ public class ManListController implements Serializable {
     // переменные для постраничности
     private int totalManCount; // общее количество найденных сотрудников
     private int manOnPage = 2; // количество сотрудников, отображаемое на одной странице
+    private int pageCount; // количество страниц
     private long selectedPageNumber = 1; // выбранный номер страницы в постраничной навигации
     private ArrayList<Integer> pageNumbersList = new ArrayList<Integer>(); //общее количество страниц
 
@@ -147,17 +148,17 @@ public class ManListController implements Serializable {
     }
 
     // методы для постраничности
-    public String selectPage() {
+    public void selectPage() {
+        cancelEdit();
+        imitateLoading();
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         selectedPageNumber = Integer.valueOf(params.get("page_number"));
         fillManBySQL(currentSql);
-        return "man";
     }
 
-    private void fillPageNumbers(long totalBooksCount, int booksOnPage) {
+    private void fillPageNumbers(long totalBooksCount, int booksOnPage) { //определяет количество страниц и создает соответствующую коллекцию целых чисел
 
-        //int pageCount = totalBooksCount > 0 ? (int) (totalBooksCount / booksCountOnPage) : 0;
-        int pageCount = 0; //количество страниц
+        pageCount = 0; //количество страниц
         if (totalBooksCount == 0) {
             pageCount = 0;
         } else if (totalBooksCount % booksOnPage == 0) {
@@ -171,10 +172,20 @@ public class ManListController implements Serializable {
             pageNumbersList.add(i);
         }
     }
+    
+    public void manOnPageChanged(ValueChangeEvent e) { //выполняется при выборе (из выпадающего списка) пользователем количества отображаемых на одной странице сотрудников 
+    imitateLoading();
+    cancelEdit();
+    manOnPage = Integer.valueOf(e.getNewValue().toString()).intValue();
+    selectedPageNumber = 1;
+    fillManBySQL(currentSql);
+    
+    }
+    
 
-    private void imitateLoading() {
+    private void imitateLoading() { // имитация загрузки процесса
         try {
-            Thread.sleep(1000); // имитация загрузки процесса
+            Thread.sleep(1000); 
         } catch (InterruptedException ex) {
             Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -187,7 +198,9 @@ public class ManListController implements Serializable {
                 PreparedStatement prepStmt = conn.prepareStatement("update man set name=?, surname=?, otchestvo=?, birth_date=? where id=?");
                 ResultSet rs = null;) {
             for (Man man : currentManList) {
-                if (!man.isEdit()) continue; // для сотрудников, напротив которых флажок не был нажат, обновление данных не происходит
+                if (!man.isEdit()) {
+                    continue; // для сотрудников, напротив которых флажок не был нажат, обновление данных не происходит
+                }
                 prepStmt.setString(1, man.getName());
                 prepStmt.setString(2, man.getSurname());
                 prepStmt.setString(3, man.getOtchestvo());
@@ -207,12 +220,12 @@ public class ManListController implements Serializable {
     public void switchEditMode() {
         editMode = !editMode;
     }
-    
+
     public void cancelEdit() { // выполнятся при нажатии кнопки Отмена в режиме редактирования на странице man.xhtml
-    editMode = false;
-    for (Man man : currentManList) {
-    man.setEdit(false);
-    }
+        editMode = false;
+        for (Man man : currentManList) {
+            man.setEdit(false);
+        }
     }
 
     public void searchTypeChanged(ValueChangeEvent e) { // благодаря данному методу сохраняется выбранный тип поиска при переключении языка

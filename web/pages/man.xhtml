@@ -136,6 +136,15 @@
                         </h:column>
 
                     </h:dataTable>
+                    
+                    <h:selectOneMenu styleClass="man_on_page_dropdown" value="#{manListController.manOnPage}" valueChangeListener="#{manListController.manOnPageChanged}">
+                        <f:selectItem itemValue="5"/>
+                        <f:selectItem itemValue="10"/>
+                        <f:selectItem itemValue="20"/>
+                        <f:selectItem itemValue="30"/>
+                        <f:ajax event="change" execute="@form" onevent="showProgress" render=":manForm :manForm:manList :pager1 :pager2"/>
+                    </h:selectOneMenu>
+                    
                 </h:form>
             </ui:define>
 

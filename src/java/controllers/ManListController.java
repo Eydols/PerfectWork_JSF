@@ -10,9 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
@@ -24,61 +22,55 @@ import javax.faces.event.ValueChangeEvent;
 @SessionScoped
 public class ManListController implements Serializable {
 
+    // коллекции
+    private ArrayList<Man> currentManList; // текущий список сотрудников для отображения
+    private ArrayList<Integer> pageNumbersList = new ArrayList<Integer>(); //количество страниц для постраничности
+
+    // критерии поиска
+    private String selectedSearchString; // хранит поисковую строку
+    private SearchType selectedSearchType = SearchType.ALL_FIRM; // хранит выбранный тип поиска, по умолчанию - все организации
+    private String currentSqlNoLimit; // последний выполненный SQL запрос без оператора limit
+
+    // для постраничности
+    private int totalManCount; // общее количество найденных сотрудников (необходи)
+    private int manCountOnPage = 2; // количество сотрудников, отображаемое на одной странице
+    private long selectedPageNumber = 1; // выбранный номер страницы в постраничной навигации
+    private int pageCount; // количество страниц
+
+    private boolean editModeView = false; // отображение режима редактирования
+
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
 
-    private String searchString;
-    private SearchType searchType;
-    private ArrayList<Man> currentManList;
-
-    // переменные для постраничности
-    private int totalManCount; // общее количество найденных сотрудников
-    private int manOnPage = 2; // количество сотрудников, отображаемое на одной странице
-    private int pageCount; // количество страниц
-    private long selectedPageNumber = 1; // выбранный номер страницы в постраничной навигации
-    private ArrayList<Integer> pageNumbersList = new ArrayList<Integer>(); //общее количество страниц
-
-    private String currentSql;
-
-    private boolean editMode = false; // предназначена для переключения ржимов отображения(false)/редактирования(true) данных сотрудников
-
-    public boolean isEditMode() {
-        return editMode;
-    }
-
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-    }
-
     public ManListController() {
-
     }
 
+//<editor-fold defaultstate="collapsed" desc="запросы в БД">
     private void fillManBySQL(String sql) {
-
+        
         imitateLoading();
-
+        
         StringBuilder sqlBuilder = new StringBuilder(sql);
-        currentSql = sql;
-
+        currentSqlNoLimit = sql;
+        
         try {
             conn = Database.getConnection(); // доработать, чтобы использовать блок try-catch с ресурсами
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sqlBuilder.toString());
-
+            
             rs.last();
             totalManCount = rs.getRow();
-            fillPageNumbers(totalManCount, manOnPage);
-
-            if (totalManCount > manOnPage) {
-                sqlBuilder.append(" limit ").append(selectedPageNumber * manOnPage - manOnPage).append(",").append(manOnPage);
+            fillPageNumbers(totalManCount, manCountOnPage);
+            
+            if (totalManCount > manCountOnPage) {
+                sqlBuilder.append(" limit ").append(selectedPageNumber * manCountOnPage - manCountOnPage).append(",").append(manCountOnPage);
             }
-
+            
             rs = stmt.executeQuery(sqlBuilder.toString());
-
+            
             currentManList = new ArrayList<Man>();
-
+            
             while (rs.next()) {
                 Man man = new Man();
                 man.setId(rs.getInt("id"));
@@ -92,7 +84,7 @@ public class ManListController implements Serializable {
                 man.setDoljnost2(rs.getString("doljnost2"));
                 man.setPhoto(rs.getString("photo"));
                 currentManList.add(man);
-
+                
             }
         } catch (SQLException ex) {
             Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,7 +104,7 @@ public class ManListController implements Serializable {
             }
         }
     }
-
+    
     private void fillManAll() {
         fillManBySQL("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
@@ -121,79 +113,34 @@ public class ManListController implements Serializable {
                 + "inner join spr_doljnost sd on m.doljnost_id=sd.id \n"
                 + "inner join spr_doljnost sd2 on m.doljnost2_id=sd2.id order by m.surname");
     }
-
+    
     public void fillManBySearch() {
-
+        
         StringBuilder sql = new StringBuilder("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
                 + "inner join spr_firm sf on m.firm_id=sf.id \n"
                 + "inner join spr_firm sf2 on m.firm2_id=sf2.id \n"
                 + "inner join spr_doljnost sd on m.doljnost_id=sd.id \n"
                 + "inner join spr_doljnost sd2 on m.doljnost2_id=sd2.id");
-
-        if (searchType == SearchType.KSR) { // потом можно попробовать использовать оператор switch
-            sql.append(" where (lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "') or (\n"
-                    + "lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "')order by m.surname");
-
-        } else if (searchType == SearchType.PERFECT) {
-            sql.append(" where (lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')or ( \n"
-                    + "lower(m.surname) like '%" + searchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')order by m.surname");
-
-        } else if (searchType == SearchType.ALL_FIRM) {
-            sql.append(" where lower(m.surname) like '%" + searchString.toLowerCase() + "%' order by m.surname");
+        
+        if (selectedSearchType == SearchType.KSR) { // потом можно попробовать использовать оператор switch
+            sql.append(" where (lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "') or (\n"
+                    + "lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "')order by m.surname");
+            
+        } else if (selectedSearchType == SearchType.PERFECT) {
+            sql.append(" where (lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')or ( \n"
+                    + "lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')order by m.surname");
+            
+        } else if (selectedSearchType == SearchType.ALL_FIRM) {
+            sql.append(" where lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' order by m.surname");
         }
-
+        
         fillManBySQL(sql.toString());
-
-    }
-
-    // методы для постраничности
-    public void selectPage() {
-        cancelEdit();
-        imitateLoading();
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        selectedPageNumber = Integer.valueOf(params.get("page_number"));
-        fillManBySQL(currentSql);
-    }
-
-    private void fillPageNumbers(long totalBooksCount, int booksOnPage) { //определяет количество страниц и создает соответствующую коллекцию целых чисел
-
-        pageCount = 0; //количество страниц
-        if (totalBooksCount == 0) {
-            pageCount = 0;
-        } else if (totalBooksCount % booksOnPage == 0) {
-            pageCount = (int) totalBooksCount / booksOnPage;
-        } else {
-            pageCount = (int) totalBooksCount / booksOnPage + 1;
-        }
-
-        pageNumbersList.clear();
-        for (int i = 1; i <= pageCount; i++) {
-            pageNumbersList.add(i);
-        }
     }
     
-    public void manOnPageChanged(ValueChangeEvent e) { //выполняется при выборе (из выпадающего списка) пользователем количества отображаемых на одной странице сотрудников 
-    imitateLoading();
-    cancelEdit();
-    manOnPage = Integer.valueOf(e.getNewValue().toString()).intValue();
-    selectedPageNumber = 1;
-    fillManBySQL(currentSql);
-    
-    }
-    
-
-    private void imitateLoading() { // имитация загрузки процесса
-        try {
-            Thread.sleep(1000); 
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public String updateMan() { // обновляет измененные данные сотудников после редактирования
         imitateLoading();
-
+        
         try (Connection conn = Database.getConnection();
                 PreparedStatement prepStmt = conn.prepareStatement("update man set name=?, surname=?, otchestvo=?, birth_date=? where id=?");
                 ResultSet rs = null;) {
@@ -212,45 +159,91 @@ public class ManListController implements Serializable {
         } catch (SQLException ex) {
             Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         switchEditMode();
         return "man";
     }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="для постраничности">
+    // методы для постраничности
+    private void fillPageNumbers(long totalBooksCount, int booksOnPage) { //определяет количество страниц и создает соответствующую коллекцию целых чисел
+
+        pageCount = 0; //количество страниц
+        if (totalBooksCount == 0) {
+            pageCount = 0;
+        } else if (totalBooksCount % booksOnPage == 0) {
+            pageCount = (int) totalBooksCount / booksOnPage;
+        } else {
+            pageCount = (int) totalBooksCount / booksOnPage + 1;
+        }
+
+        pageNumbersList.clear();
+        for (int i = 1; i <= pageCount; i++) {
+            pageNumbersList.add(i);
+        }
+    }
+
+    public void selectPage() { // отрабатывает после нажатия на к-л страницу в постраничности
+        cancelEdit();
+        imitateLoading();
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        selectedPageNumber = Integer.valueOf(params.get("page_number"));
+        fillManBySQL(currentSqlNoLimit);
+    }
+//</editor-fold>
+
+    private void imitateLoading() { // имитация загрузки процесса
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public void switchEditMode() {
-        editMode = !editMode;
+        editModeView = !editModeView;
     }
 
     public void cancelEdit() { // выполнятся при нажатии кнопки Отмена в режиме редактирования на странице man.xhtml
-        editMode = false;
+        editModeView = false;
         for (Man man : currentManList) {
             man.setEdit(false);
         }
     }
 
-    public void searchTypeChanged(ValueChangeEvent e) { // благодаря данному методу сохраняется выбранный тип поиска при переключении языка
-        searchType = (SearchType) e.getNewValue();
+    public void searchTypeChanged(ValueChangeEvent e) { // сохраняет выбранный тип поиска при переключении языка
+        selectedSearchType = (SearchType) e.getNewValue();
     }
 
-    public void searchStringChanged(ValueChangeEvent e) { //благодаря данному методу сохраняются символы, введенные в поисковую строку, при переключении языка
-        searchString = (String) e.getNewValue();
+    public void searchStringChanged(ValueChangeEvent e) { //сохраняет символы, введенные в поисковую строку, при переключении языка
+        selectedSearchString = (String) e.getNewValue();
+    }
+
+    public void changeManCountOnPage(ValueChangeEvent e) { //выполняется при выборе (из выпадающего списка) пользователем количества отображаемых на одной странице сотрудников 
+        imitateLoading();
+        cancelEdit();
+        manCountOnPage = Integer.valueOf(e.getNewValue().toString()).intValue();
+        selectedPageNumber = 1;
+        fillManBySQL(currentSqlNoLimit);
+
     }
 
     //<editor-fold defaultstate="collapsed" desc="геттеры/сеттеры">
-    public SearchType getSearchType() {
-        return searchType;
+    public SearchType getSelectedSearchType() {
+        return selectedSearchType;
     }
 
-    public String getSearchString() {
-        return searchString;
+    public String getSelectedSearchString() {
+        return selectedSearchString;
     }
 
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
+    public void setSelectedSearchString(String selectedSearchString) {
+        this.selectedSearchString = selectedSearchString;
     }
 
-    public void setSearchType(SearchType searchType) {
-        this.searchType = searchType;
+    public void setSelectedSearchType(SearchType selectedSearchType) {
+        this.selectedSearchType = selectedSearchType;
     }
 
     public void setCurrentManList(ArrayList<Man> currentManList) {
@@ -269,12 +262,12 @@ public class ManListController implements Serializable {
         this.totalManCount = totalManCount;
     }
 
-    public int getManOnPage() {
-        return manOnPage;
+    public int getManCountOnPage() {
+        return manCountOnPage;
     }
 
-    public void setManOnPage(int manOnPage) {
-        this.manOnPage = manOnPage;
+    public void setManCountOnPage(int manCountOnPage) {
+        this.manCountOnPage = manCountOnPage;
     }
 
     public long getSelectedPageNumber() {
@@ -292,6 +285,13 @@ public class ManListController implements Serializable {
     public void setPageNumbersList(ArrayList<Integer> pageNumbersList) {
         this.pageNumbersList = pageNumbersList;
     }
-//</editor-fold>
 
+    public boolean isEditModeView() {
+        return editModeView;
+    }
+
+    public void setEditModeView(boolean editModeView) {
+        this.editModeView = editModeView;
+    }
+//</editor-fold>
 }

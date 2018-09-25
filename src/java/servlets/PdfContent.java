@@ -5,7 +5,6 @@
  */
 package servlets;
 
-import beans.Man;
 import controllers.ManListController;
 import db.Database;
 import java.io.File;

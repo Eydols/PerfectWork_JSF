@@ -225,7 +225,7 @@ public class CheckSessionFilter implements Filter {
         if (filterConfig == null) {
             return ("CheckSessionFilter()");
         }
-        StringBuffer sb = new StringBuffer("CheckSessionFilter(");
+        StringBuilder sb = new StringBuilder("CheckSessionFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());

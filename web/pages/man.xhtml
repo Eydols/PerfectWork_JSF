@@ -20,24 +20,24 @@
 
                     <h:panelGroup id="admin_tools"> <!-- панель администратора (редактирование информации о сотрудниках и добавление новых сотрудников) -->
 
-                        <h:commandLink rendered="#{!manListController.editMode}">  <!-- ссылка Добавить сотрудника -->
+                        <h:commandLink rendered="#{!manListController.editModeView}">  <!-- ссылка Добавить сотрудника -->
                             <h:graphicImage library="images" name="add.png" height="20" width="20"/>
                             <h:outputText value="#{msg.add_man}"></h:outputText>
                             <f:ajax onevent="showProgress" execute="@form" render="@form"/>
                         </h:commandLink> 
 
-                        <h:commandLink action="#{manListController.switchEditMode()}" rendered="#{!manListController.editMode}"> <!-- ссылка Редактировать -->
+                        <h:commandLink action="#{manListController.switchEditMode()}" rendered="#{!manListController.editModeView}"> <!-- ссылка Редактировать -->
                             <h:graphicImage library="images" name="edit.jpg" height="20" width="20"/>
                             <h:outputText value="#{msg.edit}"></h:outputText>
                             <f:ajax onevent="showProgress" execute="@form" render="@form"/>
                         </h:commandLink>
 
-                        <h:commandButton action="#{manListController.updateMan()}" rendered="#{manListController.editMode}" 
+                        <h:commandButton action="#{manListController.updateMan()}" rendered="#{manListController.editModeView}" 
                                          value="#{msg.save}"> <!-- кнопка Сохранить -->
                             <f:ajax onevent="showProgress" execute="@form" render="@form"/>
                         </h:commandButton> 
 
-                        <h:commandButton immediate="true" action="#{manListController.cancelEdit}" rendered="#{manListController.editMode}" 
+                        <h:commandButton immediate="true" action="#{manListController.cancelEdit}" rendered="#{manListController.editModeView}" 
                                          value="#{msg.cancel}"> <!-- кнопка Отмена -->
                             <f:ajax onevent="showProgress" execute="@form" render="@form"/>
                         </h:commandButton> 
@@ -52,30 +52,30 @@
                         <h:column> <!-- колонка с основными данными сотрудника -->
                             <p>
                                 <strong>ФАМИЛИЯ:</strong> 
-                                <h:outputText value="#{m.surname}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.surname}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
+                                <h:outputText value="#{m.surname}" rendered="#{!manListController.editModeView}"/>
+                                <h:inputText value="#{m.surname}" rendered="#{manListController.editModeView and m.edit}" styleClass="name_edit"/>
                             </p>
 
                             <p>
                                 <strong>ИМЯ:</strong> 
-                                <h:outputText value="#{m.name}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.name}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
+                                <h:outputText value="#{m.name}" rendered="#{!manListController.editModeView}"/>
+                                <h:inputText value="#{m.name}" rendered="#{manListController.editModeView and m.edit}" styleClass="name_edit"/>
                             </p>
 
                             <p>
                                 <strong>ОТЧЕСТВО:</strong> 
-                                <h:outputText value="#{m.otchestvo}" rendered="#{!manListController.editMode}"/>
-                                <h:inputText value="#{m.otchestvo}" rendered="#{manListController.editMode and m.edit}" styleClass="name_edit"/>
+                                <h:outputText value="#{m.otchestvo}" rendered="#{!manListController.editModeView}"/>
+                                <h:inputText value="#{m.otchestvo}" rendered="#{manListController.editModeView and m.edit}" styleClass="name_edit"/>
                             </p> <!-- чтобы отображалось поле в режиме редактирования, д.б. поставлен флажок напротив нужного сотрудника (m.edit) -->
 
-                            <h:panelGroup rendered="#{manListController.editMode and m.edit}"> <!-- данное поле будет появляться только при редактировании -->
+                            <h:panelGroup rendered="#{manListController.editModeView and m.edit}"> <!-- данное поле будет появляться только при редактировании -->
                                 <p>
                                     <strong>ДАТА РОЖДЕНИЯ:</strong> 
                                     <h:inputText value="#{m.birth_date}" styleClass="name_edit"/>
                                 </p> 
                             </h:panelGroup>
 
-                            <h:panelGroup rendered="#{!manListController.editMode}"> <!-- данное поле будет появляться только при просмотре -->
+                            <h:panelGroup rendered="#{!manListController.editModeView}"> <!-- данное поле будет появляться только при просмотре -->
                                 <p>                                                  <!-- и зависеть от введенной даты рождения -->
                                     <strong>ВОЗРАСТ:</strong> 
                                     <h:outputText value="#{m.age}"/>
@@ -130,14 +130,14 @@
                         <!-- обложки документов (окончание) -->
 
                         <h:column>
-                            <h:selectBooleanCheckbox value="#{m.edit}" rendered="#{!manListController.editMode}">
+                            <h:selectBooleanCheckbox value="#{m.edit}" rendered="#{!manListController.editModeView}">
                                 <f:ajax event="change"/>
                             </h:selectBooleanCheckbox>
                         </h:column>
 
                     </h:dataTable>
                     
-                    <h:selectOneMenu styleClass="man_on_page_dropdown" value="#{manListController.manOnPage}" valueChangeListener="#{manListController.manOnPageChanged}">
+                    <h:selectOneMenu styleClass="man_on_page_dropdown" value="#{manListController.manCountOnPage}" valueChangeListener="#{manListController.changeManCountOnPage}">
                         <f:selectItem itemValue="5"/>
                         <f:selectItem itemValue="10"/>
                         <f:selectItem itemValue="20"/>

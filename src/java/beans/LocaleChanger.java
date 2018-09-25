@@ -1,8 +1,8 @@
 package beans;
 
-import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.Locale;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 

@@ -21,7 +21,7 @@
 
                 <h:form>
                     <h5>#{msg.welcom}, #{user.username} </h5> <!-- значение имени берется из поля username бина User -->
-                    <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/> <!-- при нажатии на кнопку Выход отрабатывает метод exit(), который возвращает значение "exit", -->                            
+                    <h:commandLink action="#{user.logout()}" value="#{msg.exit}"/> <!-- при нажатии на кнопку Выход отрабатывает метод exit(), который возвращает значение "exit", -->                            
                 </h:form>                                                                   <!-- в свою очередь навигация настроена т.о., что при возвращении методом данного значение -->
             </div>                                                                          <!-- происходит перенаправление на страницу index.xhtml (см. файл faces-config.xml)-->
 

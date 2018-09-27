@@ -52,6 +52,13 @@ body {
 
 }
 
+#loading_wrapper {
+    width: 50px;
+    position: fixed;
+    display: none;
+    vertical-align: top;
+    float: right;
+}
 
 
 
@@ -67,7 +74,7 @@ body {
 
     width:100%;
     margin:0 auto;
-    
+
 }
 
 .footer{

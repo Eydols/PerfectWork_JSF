@@ -11,7 +11,7 @@
     <h:body>
         <ui:composition>
 
-                    <h:form rendered="#{manListController.totalManCount>manListController.manOnPage}">
+                    <h:form rendered="#{manListController.totalManCount>manListController.manCountOnPage}">
                         #{msg.pager}
                         <ui:repeat value="#{manListController.pageNumbersList}" var="pageNumber">
                             <h:commandLink value="#{pageNumber}" styleClass="#{pageNamber == manListController.selectedPageNumber ? 'selected_page' : ''}">

@@ -3,10 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/templates/header.xhtml</file>
-            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/templates/paginator.xhtml</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/index.xhtml</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/templates/perfect_template.xhtml</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/src/java/beans/User.java</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/resources/css/style_index.css</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/src/java/controllers/LoginController.java</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/resources/js/functions.js</file>
             <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/src/java/controllers/ManListController.java</file>
-            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/src/java/beans/Man.java</file>
+            <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/resources/css/style_main.css</file>
             <file>file:/C:/Users/EYDOL/Documents/NetBeansProjects/PerfectWork_JSF/web/pages/man.xhtml</file>
         </group>
     </open-files>

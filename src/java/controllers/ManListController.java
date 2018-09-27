@@ -48,29 +48,29 @@ public class ManListController implements Serializable {
 
 //<editor-fold defaultstate="collapsed" desc="запросы в БД">
     private void fillManBySQL(String sql) {
-        
+
         imitateLoading();
-        
+
         StringBuilder sqlBuilder = new StringBuilder(sql);
         currentSqlNoLimit = sql;
-        
+
         try {
             conn = Database.getConnection(); // доработать, чтобы использовать блок try-catch с ресурсами
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sqlBuilder.toString());
-            
+
             rs.last();
             totalManCount = rs.getRow();
             fillPageNumbers(totalManCount, manCountOnPage);
-            
+
             if (totalManCount > manCountOnPage) {
                 sqlBuilder.append(" limit ").append(selectedPageNumber * manCountOnPage - manCountOnPage).append(",").append(manCountOnPage);
             }
-            
+
             rs = stmt.executeQuery(sqlBuilder.toString());
-            
+
             currentManList = new ArrayList<Man>();
-            
+
             while (rs.next()) {
                 Man man = new Man();
                 man.setId(rs.getInt("id"));
@@ -84,7 +84,7 @@ public class ManListController implements Serializable {
                 man.setDoljnost2(rs.getString("doljnost2"));
                 man.setPhoto(rs.getString("photo"));
                 currentManList.add(man);
-                
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
@@ -104,7 +104,7 @@ public class ManListController implements Serializable {
             }
         }
     }
-    
+
     private void fillManAll() {
         fillManBySQL("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
@@ -113,34 +113,34 @@ public class ManListController implements Serializable {
                 + "inner join spr_doljnost sd on m.doljnost_id=sd.id \n"
                 + "inner join spr_doljnost sd2 on m.doljnost2_id=sd2.id order by m.surname");
     }
-    
+
     public void fillManBySearch() {
-        
+
         StringBuilder sql = new StringBuilder("select m.id, m.name, m.surname, m.otchestvo, m.birth_date, m.photo, sf.firm as firm, sd.doljnost as doljnost, \n"
                 + "sf2.firm as firm2, sd2.doljnost as doljnost2 from man m \n"
                 + "inner join spr_firm sf on m.firm_id=sf.id \n"
                 + "inner join spr_firm sf2 on m.firm2_id=sf2.id \n"
                 + "inner join spr_doljnost sd on m.doljnost_id=sd.id \n"
                 + "inner join spr_doljnost sd2 on m.doljnost2_id=sd2.id");
-        
+
         if (selectedSearchType == SearchType.KSR) { // потом можно попробовать использовать оператор switch
             sql.append(" where (lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "') or (\n"
                     + "lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.KSR.getFirmName().toLowerCase() + "')order by m.surname");
-            
+
         } else if (selectedSearchType == SearchType.PERFECT) {
             sql.append(" where (lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')or ( \n"
                     + "lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' and lower(sf2.firm) ='" + SearchType.PERFECT.getFirmName().toLowerCase() + "')order by m.surname");
-            
+
         } else if (selectedSearchType == SearchType.ALL_FIRM) {
             sql.append(" where lower(m.surname) like '%" + selectedSearchString.toLowerCase() + "%' order by m.surname");
         }
-        
+
         fillManBySQL(sql.toString());
     }
-    
+
     public String updateMan() { // обновляет измененные данные сотудников после редактирования
         imitateLoading();
-        
+
         try (Connection conn = Database.getConnection();
                 PreparedStatement prepStmt = conn.prepareStatement("update man set name=?, surname=?, otchestvo=?, birth_date=? where id=?");
                 ResultSet rs = null;) {
@@ -159,7 +159,7 @@ public class ManListController implements Serializable {
         } catch (SQLException ex) {
             Logger.getLogger(ManListController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         switchEditMode();
         return "man";
     }
